@@ -1,3 +1,5 @@
+from Code import TestPi
+
 '''
 Compte le nombre de 0,1,2,3,... dans les décimale de Pi et les place dans une liste
 Le i ème chiffre se trouve dans la i ème possition dans la liste retourner
@@ -14,3 +16,6 @@ def countDigitFrequency():
         number = int(number)
         count[number] = count[number] + 1
     return count
+
+if __name__ == '__main__':
+    print(TestPi.chi2(countDigitFrequency()))
