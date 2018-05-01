@@ -24,5 +24,10 @@ def getPiDecimalNumber():
     return pi[2:]
 
 if __name__ == '__main__':
+    #Test Chi2 sur les decimal de Pi, alpha = 0.05
     print(TestPi.chi2Pi())
-    print(TestPi.gapPi())
+
+    #Test du gap sur les decimal de Pi, alpha = 0.05
+    testGap = TestPi.gapPi()
+    for i in range(0, len(testGap)):
+        print(testGap[i])

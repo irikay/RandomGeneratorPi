@@ -10,20 +10,19 @@ Test du Chi2 sur les decimal de Pi
 def chi2Pi():
     countPi = PiDecimalCounter.countDigitFrequency()
     #Il y a 10 chiffre dans la proba de chaque chiffre est de 10%
-    proba = 1./10
+    proba = [1./10 * 1000000] * 10
     number = len(PiDecimalCounter.getPiDecimalNumber())
-    return chi2(countPi, proba, number)
+    return chi2(countPi, proba)
 
 '''
 Test du Chi2, Vrai si on accepte l'hypothèse, faux sinon
 '''
-def chi2(count, proba, number, alpha = 0.05):
-    pi = number*proba
+def chi2(count, probaExp, alpha = 0.05):
     Kr = 0
 
     for i in range (0, len(count)):
         ni = count[i]
-        Kr = Kr + (math.pow((ni - pi), 2))/pi
+        Kr = Kr + (math.pow((ni - probaExp[i]), 2))/probaExp[i]
 
     df = len(count) - 1
     critical = stats.chi2.ppf(1 - alpha, df)
@@ -33,8 +32,10 @@ def chi2(count, proba, number, alpha = 0.05):
 def gapPi():
     pi = PiDecimalCounter.getPiDecimalNumber()
     numberOfClass = 60
-    for i in range(0, 1):
-        gapTest(pi, i, numberOfClass, alpha = 0.05)
+    tests = [False] * 10
+    for i in range(0, 10):
+        tests[i] = gapTest(pi, i, numberOfClass, alpha = 0.05)
+    return tests
 
 
 def gapTest(sequence, number, numberOfClasses, alpha):
@@ -53,13 +54,13 @@ def gapTest(sequence, number, numberOfClasses, alpha):
         else:
             gap += 1
 
+    probaTheorical = [0] * numberOfClasses
     for n in range(0, numberOfClasses):
-        #print(n)
-        theoricalN = getTheoricalProbaGap(n)
-        #print(theoricalN)
+        probaTheorical[n] = getTheoricalProbaGap(n) * 100000
+    return chi2(classes, probaTheorical)
 
 def getTheoricalProbaGap(gap):
-    return (0.9**gap)*(0.1)
+    return (1.0/10)* math.pow(9.0/10, gap)
 
 def poker():
     r = 10
