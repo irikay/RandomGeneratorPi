@@ -2,25 +2,35 @@ import math
 from scipy import stats
 from Code import PiDecimalCounter
 
+#Les valeurs d'alpha à tester
+alphas = [0.001, 0.025, 0.05, 0.1]
 
 
-'''
-Test du Chi2 sur les decimal de Pi
-'''
 def chi2Pi():
+    """
+    Test du Chi2 sur les decimales de Pi
+    """
     countPi = PiDecimalCounter.countDigitFrequency()
     #Il y a 10 chiffre dans la proba de chaque chiffre est de 10%
     proba = [1./10 * 1000000] * 10
     number = len(PiDecimalCounter.getPiDecimalNumber())
-    return chi2(countPi, proba)
+    for alpha in alphas:
+        print("Test du chi2 pour les décimales de Pi avec alpha = {0}".format(alpha))
+        if chi2(countPi, proba, alpha):
+            print("On a donc que le test du chi2 réussi")
+        else:
+            print("On a donc que le test à échouer")
+        print()
 
-'''
-Test du Chi2, Vrai si on accepte l'hypothèse, faux sinon
+def chi2(proba, probaExp, alpha):
+    """
+    Test du Chi2
 
-proba est les probabilités qu'on a eu
-probaExp sont les probabiulité attendue théoriquement
-'''
-def chi2(proba, probaExp, alpha = 0.05):
+    :param proba: les probabilités qu'on veut comparé
+    :param probaExp: les probabiulité attendue théoriquement
+    :param alpha: la valeur d'alpha
+    :return: vrai si on accepte l'hypothèse, faux sinon
+    """
     Kr = 0
 
     for i in range (0, len(proba)):
@@ -29,26 +39,36 @@ def chi2(proba, probaExp, alpha = 0.05):
 
     df = len(proba) - 1
     critical = stats.chi2.ppf(1 - alpha, df)
+    print("La valeur critique est {0} et la valeur théorique est {1}".format(critical, Kr))
     return critical >  Kr
 
-'''
-Test du gap sur les décimal de pi
-'''
 def gapPi():
+    """
+    Test du gap sur les décimal de pi
+    """
     pi = PiDecimalCounter.getPiDecimalNumber()
     numberOfClass = 60
     tests = [False] * 10
-    for i in range(0, 10):
-        tests[i] = gapTest(pi, i, numberOfClass, alpha = 0.05)
-    return tests
+    for alpha in alphas:
+        print("Test du Gap pour les décimales de Pi avec alpha = {0}".format(alpha))
+        for i in range(0, len(tests)):
+            print("Pour la décimale {0} on a donc que:".format(i))
+            if gapTest(pi, i, numberOfClass, alpha):
+                print("Le test du gap est donc réussi")
+            else:
+                print("Le test du gap à donc échouer")
 
-'''
-Test du gap, retourne vrai si on accepte l'hypothèse, faux sinon
-sequence est la sequence de nombre a analyser
-number est le nombre qu'on va marqué
-numberOfClasses est la taille maximal des trous qu'on va considéré entre 2 nombres marqué
-'''
-def gapTest(sequence, number, numberOfClasses,alpha):
+
+def gapTest(sequence, number, numberOfClasses, alpha):
+    """
+    Test du gap
+
+    :param sequence: la sequence de nombre a analyser
+    :param number: le nombre qu'on va marqué
+    :param numberOfClasses: la taille maximal des trous qu'on va considéré entre 2 nombres marqué
+    :param alpha: la valeur d'alpha pour le test de chi2
+    :return: vrai si on accepte l'hypothèse, faux sinon
+    """
     classes = [0] * numberOfClasses
     gap = 0
     seen = False
@@ -67,25 +87,17 @@ def gapTest(sequence, number, numberOfClasses,alpha):
     probaTheorical = [0] * numberOfClasses
     for n in range(0, numberOfClasses):
         probaTheorical[n] = getTheoricalProbaGap(n) * len(sequence)/10.
-    return chi2(classes, probaTheorical)
+    return chi2(classes, probaTheorical, alpha)
 
-'''
-Nous donne la valeur théorique pour un trou d'une certaine taille
-'''
 def getTheoricalProbaGap(gap):
+    """
+    Nous donne la valeur théorique pour un trou d'une certaine taille
+
+    :param gap: la taille du trou
+    :return: la valeur théorique
+    """
     return (1.0/10)* math.pow(9.0/10, gap)
 
-def poker():
-    r = 10
-    k = 5
-    sn = sterling_number(r, k)
-
-
-def sterling_number(r, k):
-    if (k == 1) or (k == r):
-        return 1
-    else:
-        return sterling_number(r-1, k-1) + (r * sterling_number(r, k-1))
 
 
 
