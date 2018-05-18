@@ -1,4 +1,4 @@
-from random import Random
+import random
 
 from Code import TestPi
 from Code import RandomGenerator
@@ -31,23 +31,24 @@ def getPiDecimalNumber():
 
 if __name__ == '__main__':
     #Test Chi2 sur les decimales de Pi
-    TestPi.chi2Pi()
+    #TestPi.chi2Pi()
     print()
 
     #Test du gap sur les decimales de Pi
-    TestPi.gapPi()
+    #TestPi.gapPi()
     print()
-    test = RandomGenerator.RandomGenerator()
-    n = 0
-    for i in range(0,0):
-        n += test.random(1)
-    print(n)
-    '''
-    count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    test = RandomGenerator.RandomGenerator()
-    for i in range(0,1000000):
-        number = int(test.random())
-        count[number] = count[number] + 1
-    for i in range(0, len(count)):
-        print(count[i])
-    '''
+
+    # Test du Chi2 pour le générateur aléatoir de python
+    #TestPi.chi2RandomPython()
+    print()
+    # Test du Chi2 pour notre générateur aléatoire
+    #TestPi.chi2RandomPi()
+    print()
+
+    # Test du gap pour le générateur aléatoire de python
+    #TestPi.gapRandomPython()
+    print()
+
+    # Test du gap pour notre générateur aléatoire
+    #TestPi.gapRandomPi()
+    print()
