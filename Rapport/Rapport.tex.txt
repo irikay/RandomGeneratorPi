@@ -1,0 +1,254 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{siunitx}
+
+% Setup for fullpage use
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{tabularx}
+\usepackage{float} 
+\usepackage{times}
+\usepackage{pbox}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\begin{document}
+
+%\frontmatter          % for the preliminaries
+%\pagestyle{headings}  % switches on printing of running heads
+%\mainmatter              % start of the contributions
+
+
+\title{
+\vspace{5cm}
+{ Rapport du projet de Simulation: } \\
+}
+\author{\textbf{Schérer Robin}
+		{\textbf{Tondeur Pierre}}\\
+\\
+}
+
+\date{Année académique: {2017-2018}\\
+{Simulation}\\
+{Université de Mons}\\}
+
+
+\maketitle              % typeset the title of the contribution
+\bigskip
+\begin{center} \today \end{center}
+\newpage
+\longpage
+\begingroup
+\let\clearpage\relax
+\endgroup
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\tableofcontents
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+Ce projet à été réalisé dans le cadre du cours dispensé par Alain Buys, "Simulation sur ordinateur".
+
+
+Le but de ce projet est de premièrement étudier le caractère pseudo-aléatoire des décimales de $\pi$ (1.000.000 de décimales ont été étudiées) via des tests vue au cours. Nous devions ensuite utilisé ces décimales pour implémenter un générateur de loi uniforme $[0,1[$ et ensuite le comparer avec le générateur par défaut de Python via les tests implémentés
+
+
+\section{Analyse des décimales de $\pi$}
+
+Tentons de déterminer si les décimales de $\pi$ suivent bien une loi uniforme via les tests suivant. 
+
+\subsection{Test du $\chi^2$}
+
+Ce test statistique permet de tester l'adéquation d'une série de données à une famille de lois de probabilités. 
+Pour ce test nous avons besoin d'un certain nombre d'intervalle, et nous comptons le nombre de valeurs qu'on a générées dans chaque intervalles, ceci est notre hypothèse.
+Nous avons aussi besoin une hypothèse nulle notée $H_0$ qui considèrent que les données suivent une lois de probabilité donnée et nous avons notre hypothèse qui sont nos données obtenu expérimentalement. 
+Nous comparons ensuite ces 2 échantillons de données via la formule suivante:
+
+\[
+K_{n} = \sum_{i = 1}^{r} (\frac{n_i - Np_i}{\sqrt{Np_i}})^2\ 
+\]
+
+on a que r est le nombre d'intervalle, $Np_i$ est l'effectif théorique pour la classe i, et $n_i$ est l'effectif qu'on à obtenu expérimentalement dans la classe i. Et nous avons un degrés de libertés égale à r - 1. Puis on se donne une probabilité $\alpha$ qui est le risque d'erreur, avec $\alpha$ et le degré de liberté, on obtient une valeur critique, $C_i$. Et si $K_n$ < $C_i$, alors on rejette notre hypothèse.
+
+
+
+Pour les décimales de $\pi$ on choisit 10 intervalles chaque intervalle contient 1 chiffre. On a que pour $H_0$, les décimales de $\pi$ suivent une loi uniforme, donc la probabilité que chacun des chiffres apparaissent le même nombre de fois. 
+
+Voici nos résultats pour notre hypothèse:
+
+
+
+\begin{tabular}{|c|c|c|c|}
+   \hline
+    & \multicolumn{2}{c|}{Résulats} & \\
+   \hline
+   Chiffre & Théorique & Expérimentaux & Erreur relative(\%) \\
+   \hline
+   0 & 100 000 & 2.3 & \\
+   \hline
+   1 & 100 000 & 2.3 & \\
+   \hline
+   2 & 100 000 & 2.3 & \\
+   \hline
+   3 & 100 000 & 2.3 & \\
+   \hline
+   4 & 100 000 & 2.3 & \\
+   \hline
+   5 & 100 000 & 2.3 & \\
+   \hline
+   6 & 100 000 & 2.3 & \\
+   \hline
+   7 & 100 000 & 2.3 & \\
+   \hline
+   8 & 100 000 & 2.3 & \\
+   \hline
+   9 & 100 000 & 2.3 & \\
+   \hline
+\end{tabular}
+
+
+\begin{tikzpicture}[scale=1.4]
+\begin{axis} [height=8cm,width=13cm, title = {Histogramme des occurrences des chiffres dans les décimales de $\pi$}, xlabel={Chiffre},
+ylabel={Nombre d'occurence (x$10^5$)}, ybar,
+legend entries={Théorique, Expérimentale}, nodes near coords]
+\addplot
+coordinates{(0,1)(1,1)(2,1)(3,1)(4,1)(5,1)(6,1)(7,1)(8,1)(9,1)};
+\addplot
+coordinates{(0,1)(1,1)(2,1)(3,1)(4,1)(5,1)(6,1)(7,1)(8,1)(9,1)};
+\end{axis}
+\end{tikzpicture}
+
+
+Maintenant effectuons le test du $\chi^2$ sur nos 2 hypothèse: 
+
+\begin{tabular}{|c|c|c|c|}
+   \hline
+   $\alpha$ & K & $C_i$ & On garde notre hypothèse \\
+   \hline
+   0,01 & 100 000 & 2.3 & Oui\\
+   \hline
+   0.025 & 100 000 & 2.3 & Oui\\
+   \hline
+   0.05 & 100 000 & 2.3 & Oui\\
+   \hline
+\end{tabular}
+
+On a donc que les décimales de $\pi$ passe bien le test du $\chi^2$ pour nos alpha et que donc elles suivent bien une lois uniformes.
+
+
+\subsection{Test du Gap}
+
+Pour ce test on a une suite de nombre $u_1$, $u_2$, ... , $u_n$. On choisit 1 \leq a \leq b \leq 9 et on marque ceux qui tombent dans [a, b], qui pour chaque nombre à une probabilité p = \frac{(b+1) - a}{10} de se produire. Et on s'intéresse ensuite à la distance entre 2 nombres d'affiler marqués. On se donne $n$ nombre de classe, dans la classe $i$, on a le nombre de fois qu'on a un trou de distance $i$ entre 2 nombre marqués après analyse de notre séquence de nombre. Ceci est notre hypothèse.
+
+L'hypothèse nulle est que pour chaque classe $i$ on a: $p(1-p)^i$ 
+
+On compare ensuite ces 2 hypothèses avec le test du $\chi^2$ pour savoir si le test est réussi ou non.
+
+
+Dans notre cas, on choisit de faire 10 fois ce test pour chacun des 10 chiffre, et que a chaque fois a = b. On a donc à chaque fois que p = 0.1.
+
+Voici ce qu'on obtient pour le nombre d'occurrence de certaines longueurs de trou pour le chiffre 5. 
+
+\begin{tabular}{|c|c|c|c|}
+   \hline
+   Longueurs du trou & Nombre d'occurrences théorique & Nombre d'occurrences obtenu & Erreur relative (\%)\\
+   \hline
+   1 & & & \\
+   \hline
+   2 & & & \\
+   \hline
+   3 & & & \\
+   \hline
+   4 & & & \\
+   \hline
+   5 & & & \\
+   \hline
+   6 & & & \\
+   ... & ... & ... & ... \\
+   21 & & & \\
+   \hline
+   22 & & & \\
+   \hline
+   23 & & & \\
+   \hline
+   24 & & & \\
+   \hline
+   25 & & & \\
+     ... & ... & ... & ... \\
+    24 & & & \\
+   \hline
+    57 & & & \\
+   \hline
+    58 & & & \\
+   \hline
+    59 & & & \\
+   \hline
+    60 & & & \\
+   \hline
+\end{tabular}
+
+Pour le test de $\chi^2$ on a les résultats suivant:
+
+\begin{tabular}{|c|c|c|c|}
+   \hline
+   $\alpha$ & K & $C_i$ & On garde notre hypothèse \\
+   \hline
+   0,01 & 100 000 & 2.3 & Oui\\
+   \hline
+   0.025 & 100 000 & 2.3 & Oui\\
+   \hline
+   0.05 & 100 000 & 2.3 & Oui\\
+   \hline
+\end{tabular}
+
+On a que pour les 10 chiffres tout les tests passe bien. On a donc que les décimales de $\pi$ réussissent le test du Gap.
+
+\subsection{Conclusion}
+
+On a donc que les 1.000.000 de premières décimales de $\pi$ suivent bien une loi uniforme.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Générateur de nombre pseudo-aléatoire avec les décimales de $\pi$}
+
+\subsection{Principe de notre générateur}
+
+Pour notre générateur de nombre pseudo-aléatoire nous avons choisit d'utiliser la congruence linéaire, et le caractère pseudo-aléatoire sera le temps actuelle sur la machine. Nous avons donc une valeur pour a, c, et m utilisé pour la congruence linéaire, un index compris entre 0 et 1.000.000, et bien sûr les 1.000.000 de première décimales de $\pi$ dans un string.
+
+
+Les valeurs choisies pour la congruence linéaire sont a = 41, c = 11, et m = 1.000.000. Ces valeurs respectent le Théorème de Hull et Dobel pour maximiser la période pour revenir à notre index de départ. On a que m = 1.000.000 car les index pour $\pi$ vont de 0 à 999.999, on doit aussi avoir que c est premier avec m, donc 11 est premier avec m. On doit aussi avoir que b est un multiple de 4 si 4 est un diviseur de m, ce qui est le cas. On a que a = b + 1, et que b est un multiple de p $\forall$ p diviseur premier de m. On a donc que 2 et 5 sont les diviseurs premier de m, et donc b est un multiple de 2, 4 et 5. On a choisit b = 40, et donc a = 41.
+
+
+Quand on initialise le générateur, il initialise l'index de base avec le temps actuelle avec la méthode time.time(). À chaque fois qu'on demandera un nombre à notre générateur, il assignera $(((a * index) + c) \% m)$ à l'index et retournera "0." suivit par les n (16 par défaut) chiffres à partir de cet index dans les décimales de $\pi$, sauf si index vaut plus de 999984, il retournera alors (999.999 - index) chiffres.
+
+\subsection{Comparaison de notre générateur avec celui de Python}
+
+Pour comparé notre générateur avec celui de Python on va voir si les 2 générateur suivent bien une loi uniforme, pour ce faire nous allons lancer nos tests avec comme valeur pour les tests un certains nombres de nombre généré par les 2 générateurs. Et nous compareront les valeurs expérimentales avec les valeurs théorique qu'un générateur aléatoire devrait idéalement retourner.
+
+Le "meilleur" générateur indépendamment du temps pour générer un nombre sera celui qui à la valeur K la plus petite lorsque l'on appellera le test du $\chi^2$, donc celui qui est le plus proche d'une loi uniforme.
+
+
+\subsection{Test du $\chi^2$}
+
+\subsection{Test du Gap}
+
+\subsection{Conclusion}
+
+On a donc que ... , mais notre générateur est plus lent que celui de Python. 
+\end{document}
