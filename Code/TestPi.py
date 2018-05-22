@@ -5,50 +5,57 @@ from Code import PiDecimalCounter
 from Code import RandomGenerator
 
 #Les valeurs d'alpha à tester
-alphas = [0.001, 0.025, 0.05]
+alphas = [0.001,0.025,0.05]
 
 
 
 def chi2RandomPython():
     """
     Test du Chi2 sur le générateur aléatoire de python
+    :return un tuple où le premier élément est un boolean qui indique si le test est réussi, et le 2ième élément est la valeur du Kn
     """
     number = 1000000
-    total = 0.0
     proba = [1. / 10 * number] * 10
     count = [0] * 10
     for i in range(0, number):
-        n = float(random.random()) * 10
-        total += n
+        n = random.random() * 10
         index = int(n)
         count[index] = count[index] + 1
+    test = 0
     for alpha in alphas:
         print("Test du chi2 pour le générateur aléatoire de python avec alpha = {0}".format(alpha))
-        if chi2(count, proba, alpha):
+        test = chi2(count, proba, alpha)
+        if test[0]:
             print("On a donc que le test du chi2 réussi")
         else:
             print("On a donc que le test à échouer")
         print()
+    return test[1]
 
 def chi2RandomPi():
     """
     Test du Chi2 sur le générateur aléatoire de python
+
+    :return un tuple où le premier élément est un boolean qui indique si le test est réussi, et le 2ième élément est la valeur du Kn
     """
     number = 1000000
     proba = [1. / 10 * number] * 10
     count = [0] * 10
     rand = RandomGenerator.RandomGenerator()
     for i in range(0, number):
-        n = float(rand.random())
-        index = int(n*10)
+        n = rand.random() * 10
+        index = int(n)
         count[index] = count[index] + 1
+    test = 0
     for alpha in alphas:
         print("Test du chi2 de notre générateur aléatoire avec alpha = {0}".format(alpha))
-        if chi2(count, proba, alpha):
-            print("On a donc que le test du chi2 réussi pour les intervalle de nombre")
+        test = chi2(count, proba, alpha)
+        if test[0]:
+            print("On a donc que le test du chi2 réussi")
         else:
             print("On a donc que le test à échouer")
         print()
+    return test[1]
 
 
 def chi2Pi():
@@ -60,7 +67,7 @@ def chi2Pi():
     proba = [1./10 * 1000000] * 10
     for alpha in alphas:
         print("Test du chi2 pour les décimales de Pi avec alpha = {0}".format(alpha))
-        if chi2(countPi, proba, alpha):
+        if chi2(countPi, proba, alpha)[0]:
             print("On a donc que le test du chi2 réussi")
         else:
             print("On a donc que le test à échouer")
@@ -73,7 +80,7 @@ def chi2(proba, probaExp, alpha):
     :param proba: les probabilités qu'on veut comparé
     :param probaExp: les probabiulité attendue théoriquement
     :param alpha: la valeur d'alpha
-    :return: vrai si on accepte l'hypothèse, faux sinon
+    :return un tuple où le premier élément est un boolean qui indique si le test est réussi, et le 2ième élément est la valeur du Kn
     """
     Kr = 0
 
@@ -83,93 +90,86 @@ def chi2(proba, probaExp, alpha):
 
     df = len(proba) - 1
     critical = stats.chi2.ppf(1 - alpha, df)
-    print("La valeur critique est {0} et la valeur théorique est {1}".format(critical, Kr))
-    return critical > Kr
+    print("La valeur critique est {0} et la valeur expérimentale est de {1}".format(critical, Kr))
+    return ((critical > Kr), Kr)
 
 def gapRandomPython():
     """
     Test du gap sur le générateur aléatoire de python
+
+    :return: un tuble, (le pourcentage de test réussi, la moyenne des Kr de tout les test)
     """
-    number = 1000
+    number = 100000
     total = ""
-    #On sauvegarde tout les nombre généré les uns à la suite des autres sans le "0."
+    #On sauvegarde le premier chiffre après la virgule on a 10 intervalles de 0.0 à 0.1, de 0.1 à 0.2, etc
     for i in range(0, number):
-        s = random.random()
-        r = repr(s)
-        if 'e' in r:  # Detecte la notation scientifique, voir https://stackoverflow.com/questions/38847690/convert-float-to-string-without-scientific-notation-and-false-precisionhttps://stackoverflow.com/questions/38847690/convert-float-to-string-without-scientific-notation-and-false-precision
-            digits, exp = r.split('e')
-            digits = digits.replace('.', '').replace('-', '')
-            exp = int(exp)
-            zero_padding = '0' * (abs(int(exp)) - 1)
-            if exp > 0:
-                r = '{}{}.0'.format(digits, zero_padding)
-            else:
-                r = '0.{}{}'.format(zero_padding, digits)
-            s = r
-        else:
-            s = str(s)
-        total += s[2:]
-    print(total)
-    numberOfClass = 60
+        s = str(random.random())
+        total += s[2]
+    numberOfClass = 55
     tests = [False] * 10
+    passed = 0
+    tot = 0
+    Kr = 0.0
     for alpha in alphas:
         print("Test du Gap pour le générateur de python avec alpha = {0}".format(alpha))
         for i in range(0, len(tests)):
+            tot += 1
             print("Pour la décimale {0} on a donc que:".format(i))
-            if gapTest(total, i, numberOfClass, alpha):
+            test = gapTest(total, i, numberOfClass, alpha)
+            Kr += test[1]
+            if test[0]:
+                passed += 1
                 print("Le test du gap est donc réussi")
             else:
                 print("Le test du gap à donc échouer")
+    print("Le nombre de test réussi est de {0} sur {1} soit un pourcentage de {2}".format(passed, tot, ((passed)/tot)*100))
+    return (((passed) / tot) * 100, Kr/tot)
 
 def gapRandomPi():
     """
     Test du gap sur notre générateur aléatoire
+
+    :return: un tuble, (le pourcentage de test réussi, la moyenne des Kr de tout les test)
     """
-    number = 1000
+    number = 100000
     total = ""
     rand = RandomGenerator.RandomGenerator()
-    #On sauvegarde tout les nombre généré les uns à la suite des autres sans le "0."
+    # On sauvegarde le premier chiffre après la virgule on a 10 intervalles de 0.0 à 0.1, de 0.1 à 0.2, etc
     for i in range(0, number):
-        s = rand.random()
-        r = repr(s)
-        if 'e' in r:  # Detecte la notation scientifique, voir https://stackoverflow.com/questions/38847690/convert-float-to-string-without-scientific-notation-and-false-precisionhttps://stackoverflow.com/questions/38847690/convert-float-to-string-without-scientific-notation-and-false-precision
-            digits, exp = r.split('e')
-            digits = digits.replace('.', '').replace('-', '')
-            exp = int(exp)
-            zero_padding = '0' * (abs(int(exp)) - 1)
-            if exp > 0:
-                r = '{}{}.0'.format(digits, zero_padding)
-            else:
-                r = '0.{}{}'.format(zero_padding, digits)
-            s = r
-        else:
-            s = str(s)
-        total += s[2:]
-    numberOfClass = 60
+        s = str(random.random())
+        total += s[2]
+    numberOfClass = 55
     tests = [False] * 10
+    passed = 0
+    tot = 0
+    Kr = 0.0
     for alpha in alphas:
         #print("Test du Gap pour les décimales de Pi avec alpha = {0}".format(alpha))
         for i in range(0, len(tests)):
+            tot += 1
             print("Pour la décimale {0} on a donc que:".format(i))
-            if gapTest(total, i, numberOfClass, alpha):
-                a = 0
+            test = gapTest(total, i, numberOfClass, alpha)
+            Kr += test[1]
+            if test[0]:
+                passed += 1
                 print("Le test du gap est donc réussi")
             else:
-                a =1
                 print("Le test du gap à donc échouer")
+    print("Le nombre de test réussi est de {0} sur {1} soit un pourcentage de {2}".format(passed, tot,((passed) / tot) * 100))
+    return (((passed) / tot) * 100, Kr / tot)
 
 def gapPi():
     """
     Test du gap sur les décimal de pi
     """
     pi = PiDecimalCounter.getPiDecimalNumber()
-    numberOfClass = 60
+    numberOfClass = 55
     tests = [False] * 10
     for alpha in alphas:
         print("Test du Gap pour les décimales de Pi avec alpha = {0}".format(alpha))
         for i in range(0, len(tests)):
             print("Pour la décimale {0} on a donc que:".format(i))
-            if gapTest(pi, i, numberOfClass, alpha):
+            if gapTest(pi, i, numberOfClass, alpha)[0]:
                 print("Le test du gap est donc réussi")
             else:
                 print("Le test du gap à donc échouer")

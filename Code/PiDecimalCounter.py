@@ -31,24 +31,52 @@ def getPiDecimalNumber():
 
 if __name__ == '__main__':
     #Test Chi2 sur les decimales de Pi
-    #TestPi.chi2Pi()
+    TestPi.chi2Pi()
     print()
 
     #Test du gap sur les decimales de Pi
-    #TestPi.gapPi()
+    TestPi.gapPi()
     print()
 
+    number = 20
     # Test du Chi2 pour le générateur aléatoir de python
-    #TestPi.chi2RandomPython()
+    ktot = 0
+    for i in range(0, number):
+        ktot += TestPi.chi2RandomPython()
+    #Kn moyen
+    print(ktot / number)
     print()
+
     # Test du Chi2 pour notre générateur aléatoire
-    #TestPi.chi2RandomPi()
+    ktot2 = 0
+    for i in range(0, number):
+        ktot2 += TestPi.chi2RandomPi()
+    #Kn moyen
+    print(ktot2 / number)
     print()
+
 
     # Test du gap pour le générateur aléatoire de python
-    #TestPi.gapRandomPython()
-    print()
+    pourcentage = 0
+    GKtot1 = 0.0
+    for i in range(0,number):
+        test = TestPi.gapRandomPython()
+        pourcentage += test[0]
+        GKtot1 += test[1]
+    #Pourcentage de test réussi
+    print(pourcentage/number)
+    #Kn moyen
+    print(GKtot1/number)
 
     # Test du gap pour notre générateur aléatoire
-    #TestPi.gapRandomPi()
+    pourcentage2 = 0
+    GKtot2 = 0.0
+    for i in range(0, number):
+        test = TestPi.gapRandomPi()
+        pourcentage2 += test[0]
+        GKtot2 += test[1]
+    #Pourcentage de test réussi
+    print(pourcentage2 / number)
+    #Kn moyen
+    print(GKtot2 / number)
     print()
