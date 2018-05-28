@@ -38,8 +38,12 @@ if __name__ == '__main__':
     TestPi.gapPi()
     print()
 
+    # Test du Poker sur les decimales de Pi
+    TestPi.pokerPi()
+    print()
+
     number = 20
-    # Test du Chi2 pour le générateur aléatoir de python
+    # Test du Chi2 pour le générateur aléatoire de python
     ktot = 0
     for i in range(0, number):
         ktot += TestPi.chi2RandomPython()
@@ -79,4 +83,20 @@ if __name__ == '__main__':
     print(pourcentage2 / number)
     #Kn moyen
     print(GKtot2 / number)
+    print()
+
+    # Test du Poker pour le générateur aléatoire de python
+    ktot = 0
+    for i in range(0, number):
+        ktot += TestPi.pokerRandomPython()
+    # Kn moyen
+    print(ktot / number)
+    print()
+
+    # Test du Poker pour notre générateur aléatoire
+    ktot2 = 0
+    for i in range(0, number):
+        ktot2 += TestPi.pokerRandomPi()
+    # Kn moyen
+    print(ktot2 / number)
     print()

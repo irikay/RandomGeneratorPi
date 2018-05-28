@@ -7,6 +7,150 @@ from Code import RandomGenerator
 #Les valeurs d'alpha à tester
 alphas = [0.001,0.025,0.05]
 
+def sterlingNumber(k, r):
+    """
+    calcule le nombre de starling e fonction de k et de r
+    :param k: le nombre de valeur dans un tuple
+    :param r: le nombre d'intervalle foulé par les valeur du tuple
+    :return: Le nombre de manières de constituer r paquets avec k nombres
+    """
+    if(k == r or r == 1):
+        return 1
+    else:
+        return sterlingNumber(k - 1, r - 1) + r *  sterlingNumber(k - 1, r)
+
+
+def pokerClassFinder(tuple):
+    """
+    :param tuple: tuple de 5 donnee(les données sont comprises entre 0 et 9)
+    :return: l'index de la classe du tuple
+             0 : toutes ke
+    """
+    count = [0] * 10
+    res = 0
+
+    for i in range(len(tuple)):
+        count[int(tuple[i])] += 1
+
+    for i in range(10):
+        if count[i] > 0:
+            res += 1
+
+    return 5 - res
+
+def pokerExpectedProbability(r, k, d):
+    """
+    :param r: le nombre de cases différentes
+    :param k: le nombre de chiffre dans la séquence a analyser
+    :param d: le nombre d'intervalle
+    :return: la probabilité en d'avoir r cases différentes pour d intervalles
+    """
+    p = sterlingNumber(k, r)
+    for i in range(0, r):
+        p *= (d - i)
+    p /= math.pow(d, k)
+    return p
+
+
+def pokerRandomPython():
+    """
+    Test du Poker sur le générateur aléatoire de python
+    """
+    data = [0] * 5
+    probaExp = [0] * 5
+    number = 100000
+    classCounter = [0] * 5
+
+    for i in range(number):
+        for j in range(5):
+            # On sauvegarde le premier chiffre après la virgule
+            data[j] = int(float(random.random())*10)
+        classNumber = pokerClassFinder(data)
+        classCounter[classNumber] += 1
+
+    # Pourcentage par classe attendue
+    for i in range(0, len(probaExp)):
+        probaExp[i] = pokerExpectedProbability(5 - i, 5, 10)
+        #Multiplié par le nombre de séquence de 5 nombre
+        probaExp[i] *= number
+
+    test = 0
+    for alpha in alphas:
+        print("Test du Poker pour le générateur aléatoire de Python avec alpha = {0}".format(alpha))
+        test = chi2(classCounter, probaExp, alpha)
+        if test[0]:
+            print("On a donc que le test du Poker à réussi")
+        else:
+            print("On a donc que le test à échouer")
+        print()
+    return test[1]
+
+def pokerRandomPi():
+    """
+    Test du Poker sur notre générateur aléatoire
+    """
+    data = [0] * 5
+    probaExp = [0] * 5
+    number = 100000
+    rand = RandomGenerator.RandomGenerator()
+    classCounter = [0] * 5
+
+    for i in range(number):
+        for j in range(5):
+            # On garde le premier chiffre après la virgule
+            data[j] = int(float(rand.random())*10)
+        classNumber = pokerClassFinder(data)
+        classCounter[classNumber] += 1
+
+    # Pourcentage par classe attendue
+    for i in range(0, len(probaExp)):
+        probaExp[i] = pokerExpectedProbability(5 - i, 5, 10)
+        # Multiplié par le nombre de séquence de 5 nombre
+        probaExp[i] *= number
+
+    test = 0
+    for alpha in alphas:
+        print("Test du Poker pour le générateur aléatoire de Pi avec alpha = {0}".format(alpha))
+        test = chi2(classCounter, probaExp, alpha)
+        if test[0]:
+            print("On a donc que le test du Poker à réussi")
+        else:
+            print("On a donc que le test à échouer")
+        print()
+    return test[1]
+
+def pokerPi():
+    """
+    Test du Poker sur les décimal de Pi
+    """
+    number = 1000000
+    probaExp = [0] * 5
+    Pi = PiDecimalCounter.getPiDecimalNumber()
+    classCounter = [0] * 5
+    d = 10
+    print(classCounter)
+
+    for i in range(int(number/5)):
+        data = Pi[i * 5 : (i + 1) * 5 ]
+        classNumber = pokerClassFinder(data)
+        classCounter[classNumber] += 1
+
+    # Pourcentage par classe attendue
+    for i in range(0, len(probaExp)):
+        probaExp[i] = pokerExpectedProbability(5-i, 5, 10)
+        # Multiplié par le nombre de séquence de 5 nombre
+        probaExp[i] *= number/5
+
+    print(probaExp)
+    print(classCounter)
+
+    for alpha in alphas:
+        print("Test du Poker pour les décimales de Pi avec alpha = {0}".format(alpha))
+        if chi2(classCounter, probaExp, alpha)[0]:
+            print("On a donc que le test du Poker à réussi")
+        else:
+            print("On a donc que le test à échouer")
+        print()
 
 
 def chi2RandomPython():
@@ -22,6 +166,7 @@ def chi2RandomPython():
         index = int(n)
         count[index] = count[index] + 1
     test = 0
+
     for alpha in alphas:
         print("Test du chi2 pour le générateur aléatoire de python avec alpha = {0}".format(alpha))
         test = chi2(count, proba, alpha)
